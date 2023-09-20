@@ -14,7 +14,7 @@ module ActiveMerchant #:nodoc:
         super
       end
 
-      # Creates a session token for the user
+      # Creates an order for the given amount that can be used by passing sessionToken to WebSDK.createPayment()
       # {
       #     "merchantId":"<your merchantId goes here>",
       #     "merchantSiteId":"<your merchantSiteId goes here>",
@@ -38,16 +38,7 @@ module ActiveMerchant #:nodoc:
         commit('openOrder', post, options)
       end
 
-      # TODO: use the create_payment on backend instead of create_order because it gives us a redirect URL
-      def create_payment
-        raise NotImplementedError
-      end
-
       private
-
-      def get_trans_id(authorization)
-        response = authorization.split('|').first()
-      end
 
       def open_session
         timestamp  = Time.now.utc.strftime("%Y%m%d%H%M%S")
@@ -96,20 +87,6 @@ module ActiveMerchant #:nodoc:
         base = @merchant_id + @merchant_site_id + client_request_id +
           amount.to_s + currency + timestamp + @secret
         Digest::SHA256.hexdigest base
-      end
-
-      def add_payment_option(post, payment)
-        # TODO: Add support for ACH payments
-        # "alternativePaymentMethod": {
-        #   "paymentMethod": "apmgw_ACH",
-        #   "AccountNumber": "111111111",
-        #   "RoutingNumber": "999999992"
-        # }
-        post[:paymentOption] = {
-          :alternativePaymentMethod => {
-            :paymentMethod => "apmgw_Secure_Bank_Transfer"
-          }
-        }
       end
 
       def add_trans_details(post, money, options, timestamp)
