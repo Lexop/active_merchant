@@ -38,6 +38,11 @@ module ActiveMerchant #:nodoc:
         commit('openOrder', post, options)
       end
 
+      # TODO: use the create_payment on backend instead of create_order because it gives us a redirect URL
+      def create_payment
+        raise NotImplementedError
+      end
+
       private
 
       def get_trans_id(authorization)
